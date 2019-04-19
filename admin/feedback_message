@@ -1,0 +1,85 @@
+<?php
+require "../dbfiles/db.php";
+require "header.php";
+$start=0;
+$count=20;
+if(isset($_GET['start'])){
+	$start=$_GET['start'];
+}
+if(isset($_GET['count'])){
+	$count=$_GET['count'];
+}
+$total_items=sql_query("select count(user_id) as total from likes order by time")[0]['total'];
+?>
+
+		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    	<?php 
+    		if(isset($_GET['error'])){
+    			echo '<div class="alert alert-danger">Error:'.$_GET['error'].'</div>';
+    		}
+    	?>
+
+          <h2>Likes</h2>
+
+          <div class="table table-responsive">
+            <table class="table table-striped table-sm">
+              <thead>
+                <tr>
+                  <th>Liked Photo</th>
+                  <th>Uploaded By</th>
+                  <th>Liked By</th>
+                  <th>Date & Time</th>
+                </tr>
+              </thead>
+
+              <tbody>
+              	<?php 
+              	$alllikes=sql_query("select  from likes, users where users.id=likes.user_id and users.id=( select user_photos.user_id from user_photos, likes where user_photos.id=likes.photo_id  ) order  by likes.time");
+				foreach ($alllikes as $key => $value) {
+              	echo '<tr>
+		                  <td><img  class="rounded-circle"style="height:45px;width:45px;margin:auto;" src="../user_photos/png/'.$value['photo_id'].'.png"></td>
+		                  <td>
+							<img  class="rounded-circle"style="height:45px;width:45px;margin:auto;" src="../user_pics/'.$value['user_id'].'.png">'.$value[''].'
+		                  </td>
+		                  <td></td>
+		                  <td>';
+		                  ?>
+						
+		                  <?php
+		                  echo '</td>
+		                </tr>';
+				}
+              ?>
+                
+                
+              </tbody>
+            </table>
+          </div>
+          <ul class="pagination pagination-sm">
+			<li class="page-item"><a class="page-link" href="?start=<?php echo ($start-20 < 0)?0:$start-20; ?>">Previous</a></li>
+		  
+				<?php 
+					for($i=0;$i<$total_items;$i+=20){
+						$st=$i;
+						//$ed=$i+20;
+						$cnt=$i/20;
+						if($start/20 == $cnt){
+							echo "<li class='page-item active'><a class='page-link' href='?start={$st}'>{$cnt}</a></li>";
+						}
+						else{
+							echo "<li class='page-item'><a class='page-link' href='?start={$st}'>{$cnt}</a></li>";
+						}
+						
+					}
+				?>
+			<li class="page-item"><a class="page-link" href="?start=<?php echo ($start > $total_items)?$start:$start+20; ?>">Next</a></li>
+		</ul>
+        </main>
+
+
+<?php 
+require "footer.php";
+?>
+<script>
+
+</script>
